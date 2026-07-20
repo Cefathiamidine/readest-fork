@@ -134,10 +134,29 @@ export async function uploadReplicaFileToCloud(
   }
 }
 
-// Cloud key for a replica binary. Centralized so adapters and the
-// download path share the same path-construction rule.
-export const replicaCloudKey = (kind: string, replicaId: string, filename: string): string =>
-  `${CLOUD_REPLICAS_SUBDIR}/${kind}/${replicaId}/${filename}`;
+// // Cloud key for a replica binary. Centralized so adapters and the
+// // download path share the same path-construction rule.
+// export const replicaCloudKey = (kind: string, replicaId: string, filename: string): string =>
+//   `${CLOUD_REPLICAS_SUBDIR}/${kind}/${replicaId}/${filename}`;
+
+// export async function downloadReplicaFileFromCloud(
+//   appService: AppService,
+//   opts: {
+//     kind: string;
+//     replicaId: string;
+//     filename: string;
+//     dst: string;
+//     onProgress?: ProgressHandler;
+//   },
+// ): Promise<void> {
+//   const cfp = replicaCloudKey(opts.kind, opts.replicaId, opts.filename);
+//   await downloadFile({
+//     appService,
+//     cfp,
+//     dst: opts.dst,
+//     onProgress: opts.onProgress,
+//   });
+// }
 
 export async function downloadReplicaFileFromCloud(
   appService: AppService,
@@ -150,12 +169,22 @@ export async function downloadReplicaFileFromCloud(
   },
 ): Promise<void> {
   const cfp = replicaCloudKey(opts.kind, opts.replicaId, opts.filename);
-  await downloadFile({
-    appService,
-    cfp,
-    dst: opts.dst,
-    onProgress: opts.onProgress,
-  });
+
+  try {
+    await downloadFile({
+      appService,
+      cfp,
+      dst: opts.dst,
+      onProgress: opts.onProgress,
+    });
+  } catch (error) {
+    // 捕获官方云的 401 或连接错误，打印日志并优雅退出，不让它 throw 导致队列卡死
+    console.warn(
+      `[Cloud Sync Bypassed] 官方云文件下载失败 (${cfp})，已跳过以防阻塞 WebDAV:`,
+      error,
+    );
+    return;
+  }
 }
 
 export async function deleteReplicaBundleFromCloud(
