@@ -105,14 +105,20 @@ const IntegrationsPanel: React.FC = () => {
   // returns true for every plan until `CLOUD_SYNC_REQUIRES_PREMIUM` is flipped
   // back on. The `?? 'free'` keeps the (re-gated) loading state non-premium.
   const { userProfilePlan } = useQuotaStats();
-  const isCloudSyncPremium = isCloudSyncAllowed(userProfilePlan ?? 'free');
-  // Only surface the tier chip to users who cannot use the feature yet — signed
-  // out (known immediately), or signed in on a plan without cloud sync (known
-  // once the plan resolves). An entitled user already has it, so the badge is
-  // noise. Suppressing it while a signed-in user's plan is still loading avoids
-  // flashing the chip at a premium user on every open.
-  const premiumBadge =
-    !user || (userProfilePlan !== undefined && !isCloudSyncPremium) ? _('Premium') : undefined;
+  // const isCloudSyncPremium = isCloudSyncAllowed(userProfilePlan ?? 'free');
+  // // Only surface the tier chip to users who cannot use the feature yet — signed
+  // // out (known immediately), or signed in on a plan without cloud sync (known
+  // // once the plan resolves). An entitled user already has it, so the badge is
+  // // noise. Suppressing it while a signed-in user's plan is still loading avoids
+  // // flashing the chip at a premium user on every open.
+  // const premiumBadge =
+  //   !user || (userProfilePlan !== undefined && !isCloudSyncPremium) ? _('Premium') : undefined;
+  
+  // 1. 强行将云同步高级权限判定设为 true
+  const isCloudSyncPremium = true; 
+
+  // 2. 强行将 Premium 标签设为 undefined，使其在界面上隐形
+  const premiumBadge = undefined;
 
   const [subPage, setSubPage] = useState<SubPage>(null);
 
