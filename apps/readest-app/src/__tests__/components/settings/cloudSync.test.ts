@@ -295,6 +295,12 @@ describe('isCloudSyncAllowed — customization unlock', () => {
   });
 
   test('does not entitle a storage-only buyer after the grace period', () => {
-    expect(isCloudSyncAllowed('purchase', false)).toBe(false);
+    // FORK-LOCAL: upstream asserts `false` here — a storage-only lifetime
+    // buyer is not customization-entitled. This fork ships
+    // CLOUD_SYNC_REQUIRES_PREMIUM off, whose short-circuit wins over the
+    // entitlement logic and ungates every plan (see the fork guard block
+    // above). If this assertion ever turns red with `false` received, the
+    // master switch has flipped back on.
+    expect(isCloudSyncAllowed('purchase', false)).toBe(true);
   });
 });
