@@ -321,8 +321,12 @@ describe('getReadyFileSyncBackends', () => {
   });
 
   test('excludes everything when the plan gate pauses third-party sync', () => {
+    // FORK-LOCAL: upstream asserts `[]` here — a free plan is paused. This
+    // fork ships CLOUD_SYNC_REQUIRES_PREMIUM off, so the gate lets every
+    // plan through and the enabled backends run as configured. If this ever
+    // regresses to `[]`, the master switch has flipped back on.
     setCachedUserPlan('free');
-    expect(getReadyFileSyncBackends(settings)).toEqual([]);
+    expect(getReadyFileSyncBackends(settings)).toEqual(['webdav', 'gdrive']);
   });
 
   test('rules icloud out off Apple platforms (canBackendRun false)', () => {
