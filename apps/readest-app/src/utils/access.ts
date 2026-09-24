@@ -65,7 +65,12 @@ export const isCloudSyncInPlan = (plan: UserPlan): boolean =>
  * Every gate goes through {@link isCloudSyncAllowed}, so this flag is the
  * whole toggle.
  */
-export const CLOUD_SYNC_REQUIRES_PREMIUM = true;
+// FORK-LOCAL: flipped off in this fork so third-party cloud sync (WebDAV /
+// Google Drive / S3 / OneDrive — all writing to the user's own storage, with
+// the same frozen remote layout as upstream) is available on every plan.
+// Keep this as the ONLY fork delta for the paywall: every gate funnels
+// through isCloudSyncAllowed, so this flag is the whole toggle.
+export const CLOUD_SYNC_REQUIRES_PREMIUM = false;
 
 /**
  * Whether third-party cloud sync is available for a plan. Falls back to the
